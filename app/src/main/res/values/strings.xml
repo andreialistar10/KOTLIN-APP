@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Entities</string>
+    <string name="action_settings">Settings</string>
+    <string name="product_list">Product List</string>
+    <string name="product_edit">Product Edit</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_price">Product Price</string>
+    <string name="invalid_username">Invalid username</string>
+    <string name="invalid_password">Password must have at least 5 characters</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Login</string>
+    <string name="login">Login</string>
+</resources>
