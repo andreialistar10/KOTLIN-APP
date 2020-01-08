@@ -7,7 +7,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object Api{
 
-    private const val URL ="http://192.168.100.3:8080/"
+    const val HOST_IP = "192.168.100.3"
+
+    private const val HOST_URL = "http://$HOST_IP"
 
     val tokenInterceptor = TokenInterceptor()
 
@@ -20,7 +22,7 @@ object Api{
         .create()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl(URL)
+        .baseUrl("$HOST_URL:8080/")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(client)
         .build()

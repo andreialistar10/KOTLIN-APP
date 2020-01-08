@@ -53,7 +53,6 @@ abstract class AbstractProductDatabase : RoomDatabase() {
         suspend fun populateDatabase(productDao: ProductDao) {
 
             productDao.deleteAll()
-
         }
     }
 

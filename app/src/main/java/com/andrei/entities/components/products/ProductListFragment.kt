@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.andrei.entities.R
 import com.andrei.entities.auth.data.AuthRepository
 import com.andrei.entities.core.TAG
+import com.andrei.entities.core.WebSocketApi
 import kotlinx.android.synthetic.main.product_list_fragment.*
 
 class ProductListFragment : Fragment() {
@@ -27,6 +28,7 @@ class ProductListFragment : Fragment() {
     ): View? {
 
         Log.v(TAG, "onCreateView")
+        WebSocketApi.connectToWebSocket()
         return inflater.inflate(R.layout.product_list_fragment, container, false)
     }
 
