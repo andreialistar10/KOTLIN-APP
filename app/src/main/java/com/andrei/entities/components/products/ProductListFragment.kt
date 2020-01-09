@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.andrei.entities.R
 import com.andrei.entities.auth.data.AuthRepository
+import com.andrei.entities.components.data.Product
 import com.andrei.entities.core.TAG
 import com.andrei.entities.core.synchronizing.MessageWorker
 import com.andrei.entities.core.synchronizing.WebSocketApi
@@ -80,14 +81,29 @@ class ProductListFragment : Fragment() {
         productsViewModel.refresh()
     }
 
-    private class MyMessageWorker:MessageWorker{
+    private inner class MyMessageWorker:MessageWorker{
 
         override fun onMessageArrived(notification: MyNotification) {
 
-            when(notification.type){
-                Type.ADD -> println("ADD notification")
-                Type.UPDATE -> println("UPDATE notification")
+            notification.entity.let {
+                val product = Product(it.id,it.name,it.price)
+                when(notification.type){
+                    Type.ADD -> notifyAddProduct(product)
+                    Type.UPDATE -> notifyUpdateProduct(product)
+                }
             }
+        }
+
+        private fun notifyAddProduct(product: Product){
+
+            Log.v(TAG,"Add notification arrived...")
+            productsViewModel.addProduct(product)
+        }
+
+        private fun notifyUpdateProduct(product: Product){
+
+            Log.v(TAG,"Update notification arrived...")
+            productsViewModel.updateProduct(product)
         }
     }
 }

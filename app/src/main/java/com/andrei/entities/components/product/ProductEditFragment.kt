@@ -24,7 +24,7 @@ class ProductEditFragment : Fragment() {
 
     private lateinit var productEditViewModel: ProductEditViewModel
     private var productId: Int? = null
-//    private var productPrice: Int? = null
+    //    private var productPrice: Int? = null
     private var product: Product? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,10 +53,8 @@ class ProductEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        Log.v(TAG, "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
-//        Log.v(TAG, "onViewCreated")
-//        product_name.setText(productId.toString())
-//        product_price.setText(productPrice.toString())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -68,9 +66,9 @@ class ProductEditFragment : Fragment() {
             Log.v(TAG, "save product")
             val prod = product
             if (prod != null) {
-                prod.name=product_name.text.toString()
+                prod.name = product_name.text.toString()
                 val price = product_price.text.toString().toIntOrNull() ?: return@setOnClickListener
-                prod.price=price
+                prod.price = price
                 productEditViewModel.saveOrUpdateProduct(prod)
             }
         }
@@ -101,11 +99,11 @@ class ProductEditFragment : Fragment() {
         })
         val id = productId
         if (id == null)
-            product = Product(0,"",0)
-        else{
+            product = Product(0, "", 0)
+        else {
             productEditViewModel.getProductById(id).observe(this, Observer {
-                Log.v(TAG,"update products")
-                if (it!=null){
+                Log.v(TAG, "update products")
+                if (it != null) {
                     product = it
                     product_name.setText(it.name)
                     product_price.setText(it.price.toString())

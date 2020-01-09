@@ -15,11 +15,11 @@ import kotlinx.coroutines.launch
 
 class ProductsViewModel(application: Application) : AndroidViewModel(application) {
 
-    //private val mutableProducts = MutableLiveData<List<Product>>().apply { value = emptyList() }
+    private val mutableProducts = MutableLiveData<List<Product>>().apply { value = emptyList() }
     private val mutableLoading = MutableLiveData<Boolean>().apply { value = false }
     private val mutableException = MutableLiveData<Exception>().apply { value = null }
 
-    val products: LiveData<List<Product>>
+    val products: LiveData<List<Product>> = mutableProducts
     val loading: LiveData<Boolean> = mutableLoading
     val loadingError: LiveData<Exception> = mutableException
 
@@ -29,7 +29,7 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
         val productDao =
             AbstractProductDatabase.getDatabase(application, viewModelScope).productDao()
         productRepository = ProductRepository(productDao)
-        products = productRepository.products
+//        products = productRepository.products
     }
 
 //    fun loadItems() {
@@ -61,7 +61,8 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
             mutableException.value = null
             when (val result = productRepository.refresh()) {
                 is Result.Success -> {
-                    Log.d(TAG, "refresh succeeded");
+                    Log.d(TAG, "refresh succeeded")
+                    mutableProducts.value = result.data
                 }
                 is Result.Error -> {
                     Log.w(TAG, "refresh failed", result.exception);
@@ -69,6 +70,31 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
                 }
             }
             mutableLoading.value = false
+        }
+    }
+
+    fun addProduct(product: Product){
+
+        viewModelScope.launch {
+            productRepository.saveLocalStorage(product)
+            mutableProducts.value?.let {
+                val newList = it.toMutableList()
+                newList.add(product)
+                mutableProducts.value = newList
+            }
+        }
+    }
+
+    fun updateProduct(product: Product) {
+
+        viewModelScope.launch {
+            productRepository.updateLocalStorage(product)
+            mutableProducts.value?.let {
+                val newList = it.toMutableList()
+                val index = newList.indexOf(product)
+                newList[index] = product
+                mutableProducts.value = newList
+            }
         }
     }
 }

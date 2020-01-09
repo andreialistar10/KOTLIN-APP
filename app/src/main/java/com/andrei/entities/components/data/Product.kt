@@ -16,4 +16,14 @@ data class Product(
     }
 
     override fun toString(): String = name
+
+    override fun equals(other: Any?): Boolean {
+
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as Product
+
+        return other.id == this.id
+    }
 }

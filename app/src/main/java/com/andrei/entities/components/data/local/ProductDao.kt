@@ -5,7 +5,7 @@ import androidx.room.*
 import com.andrei.entities.components.data.Product
 
 @Dao
-interface ProductDao{
+interface ProductDao {
 
     @Query("SELECT * FROM products ORDER BY NAME ASC")
     fun getAll(): LiveData<List<Product>>
@@ -16,7 +16,7 @@ interface ProductDao{
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(product: Product)
 
-    @Update (onConflict = OnConflictStrategy.REPLACE)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(product: Product)
 
     @Query("DELETE FROM products")

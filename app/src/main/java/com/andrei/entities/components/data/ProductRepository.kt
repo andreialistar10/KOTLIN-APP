@@ -9,13 +9,14 @@ class ProductRepository(private val productDao: ProductDao) {
 
     val products = productDao.getAll()
 
-    suspend fun refresh(): Result<Boolean>{
+    suspend fun refresh(): Result<List<Product>>{
         try{
+            productDao.deleteAll()
             val products = ProductApi.service.findAll()
             for (product in products){
                 productDao.insert(product)
             }
-            return Result.Success(true)
+            return Result.Success(products)
         } catch (e: java.lang.Exception){
             return Result.Error(e)
         }
@@ -64,6 +65,20 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
+    suspend fun saveLocalStorage(product: Product): Result<Product> {
+
+        return try{
+            if (product.id != 0)
+                productDao.insert(product)
+            else{
+                //TODO local storage for offline support
+            }
+            Result.Success(product)
+        }catch (e:java.lang.Exception){
+            Result.Error(e)
+        }
+    }
+
     suspend fun update(product: Product): Result<Product> {
 
         return try {
@@ -71,6 +86,16 @@ class ProductRepository(private val productDao: ProductDao) {
             ProductApi.service.update(product)
 //            if (index != null)
 //                cachedProducts?.set(index, product)
+            productDao.update(product)
+            return Result.Success(product)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    suspend fun updateLocalStorage(product:Product):Result<Product> {
+
+        return try {
             productDao.update(product)
             return Result.Success(product)
         } catch (e: Exception) {
