@@ -43,7 +43,7 @@ object WebSocketApi {
         nStompClient.connect()
         topicSubscription = nStompClient.topic(TOPIC)
             .subscribe { notification ->
-                val myNotification = gson?.fromJson(notification.payload,MyNotification::class.java)
+                val myNotification = gson.fromJson(notification.payload,MyNotification::class.java)
                 myNotification?.let { messageWorker.onMessageArrived(it) }
             }
     }

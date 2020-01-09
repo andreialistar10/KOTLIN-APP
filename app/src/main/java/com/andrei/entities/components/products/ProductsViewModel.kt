@@ -29,29 +29,7 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
         val productDao =
             AbstractProductDatabase.getDatabase(application, viewModelScope).productDao()
         productRepository = ProductRepository(productDao)
-//        products = productRepository.products
     }
-
-//    fun loadItems() {
-//
-//        viewModelScope.launch {
-//            Log.v(TAG, "loadProducts...")
-//            mutableLoading.value = true
-//            mutableException.value = null
-//
-//            when (val result = ProductRepository.loadAll()) {
-//                is Result.Success -> {
-//                    Log.d(TAG, "loadProducts succeeded")
-//                    mutableProducts.value = result.data
-//                }
-//                is Result.Error -> {
-//                    Log.w(TAG, "loadProducts failed", result.exception)
-//                    mutableException.value = result.exception
-//                }
-//            }
-//            mutableLoading.value = false
-//        }
-//    }
 
     fun refresh() {
 

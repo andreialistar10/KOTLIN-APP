@@ -53,6 +53,13 @@ class ProductListFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+
+        Log.v(TAG,"onDestroyView")
+        WebSocketApi.disconnect()
+        super.onDestroyView()
+    }
+
     private fun setupProductList() {
 
         productListAdapter = ProductListAdapter(this)

@@ -5,4 +5,4 @@ data class Entity(
     var name: String,
     var price: Int,
     var id: Int
-){}
+)

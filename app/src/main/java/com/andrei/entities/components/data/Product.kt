@@ -26,4 +26,12 @@ data class Product(
 
         return other.id == this.id
     }
+
+    override fun hashCode(): Int {
+
+        var result = name.hashCode()
+        result = 31 * result + price
+        result = 31 * result + id
+        return result
+    }
 }
