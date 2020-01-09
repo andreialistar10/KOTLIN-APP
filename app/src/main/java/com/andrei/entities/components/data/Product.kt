@@ -11,8 +11,13 @@ data class Product(
     @ColumnInfo(name = "price") var price: Int
 ){
     @PrimaryKey @ColumnInfo(name = "id") var id = 0
+    @ColumnInfo(name = "saved") var saved = true
     constructor(id: Int, name: String, price: Int) : this(name,price){
         this.id = id
+    }
+
+    constructor(id: Int, name: String, price: Int, saved:Boolean) : this(id,name,price){
+        this.saved = saved
     }
 
     override fun toString(): String = name
