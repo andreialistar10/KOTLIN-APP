@@ -82,10 +82,7 @@ class ProductRepository(private val productDao: ProductDao) {
     suspend fun update(product: Product): Result<Product> {
 
         return try {
-            //val index = cachedProducts?.indexOfFirst { it.id == product.id }
             ProductApi.service.update(product)
-//            if (index != null)
-//                cachedProducts?.set(index, product)
             productDao.update(product)
             return Result.Success(product)
         } catch (e: Exception) {
