@@ -1,5 +1,6 @@
-package com.andrei.entities.core
+package com.andrei.entities.core.synchronizing
 
+import com.andrei.entities.core.Api
 import io.reactivex.disposables.Disposable
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
@@ -31,8 +32,12 @@ object WebSocketApi {
 
     private fun connect() {
 
-        val nStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, WEB_SOCKET_API)
+        val nStompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP,
+            WEB_SOCKET_API
+        )
         nStompClient.connect()
-        topicSubscription = nStompClient.topic(TOPIC).subscribe { t -> println(t.payload) }
+        topicSubscription = nStompClient.topic(
+            TOPIC
+        ).subscribe { notification -> println(notification.payload) }
     }
 }

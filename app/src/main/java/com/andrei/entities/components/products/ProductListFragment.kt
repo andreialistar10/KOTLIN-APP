@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.andrei.entities.R
 import com.andrei.entities.auth.data.AuthRepository
 import com.andrei.entities.core.TAG
-import com.andrei.entities.core.WebSocketApi
+import com.andrei.entities.core.synchronizing.WebSocketApi
 import kotlinx.android.synthetic.main.product_list_fragment.*
 
 class ProductListFragment : Fragment() {
