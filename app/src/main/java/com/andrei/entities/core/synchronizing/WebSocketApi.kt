@@ -1,6 +1,8 @@
 package com.andrei.entities.core.synchronizing
 
 import com.andrei.entities.core.Api
+import com.andrei.entities.core.synchronizing.notification.MyNotification
+import com.google.gson.GsonBuilder
 import io.reactivex.disposables.Disposable
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
@@ -14,6 +16,8 @@ object WebSocketApi {
     private const val WEB_SOCKET_API = "ws://" + Api.HOST_IP + ":8099/ws/websocket"
 
     private const val TOPIC = "/topic/messages"
+
+    private val gson = GsonBuilder().create()
 
     fun connectToWebSocket(messageWorker: MessageWorker) {
 
@@ -37,11 +41,10 @@ object WebSocketApi {
             WEB_SOCKET_API
         )
         nStompClient.connect()
-        topicSubscription = nStompClient.topic(
-            TOPIC
-        ).subscribe { notification ->
-            println(notification.payload)
-            //TODO - transform notification in Notification data class and call messageWorker.onMessageArrived(message)
-        }
+        topicSubscription = nStompClient.topic(TOPIC)
+            .subscribe { notification ->
+                val myNotification = gson?.fromJson(notification.payload,MyNotification::class.java)
+                myNotification?.let { messageWorker.onMessageArrived(it) }
+            }
     }
 }
