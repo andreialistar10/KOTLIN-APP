@@ -1,6 +1,6 @@
 package com.andrei.entities.core.synchronizing.notification
 
-data class Notification(
+data class MyNotification(
     val entity: Entity,
     val type: Type
 ){}

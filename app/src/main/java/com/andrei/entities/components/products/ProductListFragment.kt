@@ -13,13 +13,17 @@ import androidx.navigation.fragment.findNavController
 import com.andrei.entities.R
 import com.andrei.entities.auth.data.AuthRepository
 import com.andrei.entities.core.TAG
+import com.andrei.entities.core.synchronizing.MessageWorker
 import com.andrei.entities.core.synchronizing.WebSocketApi
+import com.andrei.entities.core.synchronizing.notification.MyNotification
+import com.andrei.entities.core.synchronizing.notification.Type
 import kotlinx.android.synthetic.main.product_list_fragment.*
 
 class ProductListFragment : Fragment() {
 
     private lateinit var productListAdapter: ProductListAdapter
     private lateinit var productsViewModel: ProductsViewModel
+    private val myMessageWorker: MyMessageWorker = MyMessageWorker()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +32,7 @@ class ProductListFragment : Fragment() {
     ): View? {
 
         Log.v(TAG, "onCreateView")
-        WebSocketApi.connectToWebSocket()
+        WebSocketApi.connectToWebSocket(myMessageWorker)
         return inflater.inflate(R.layout.product_list_fragment, container, false)
     }
 
@@ -74,5 +78,16 @@ class ProductListFragment : Fragment() {
             }
         })
         productsViewModel.refresh()
+    }
+
+    private class MyMessageWorker:MessageWorker{
+
+        override fun onMessageArrived(notification: MyNotification) {
+
+            when(notification.type){
+                Type.ADD -> println("ADD notification")
+                Type.UPDATE -> println("UPDATE notification")
+            }
+        }
     }
 }
