@@ -15,6 +15,7 @@ class ProductRepository(private val productDao: ProductDao) {
             productDao.deleteAll()
             val products = ProductApi.service.findAll()
             for (product in products){
+                product.saved = true
                 productDao.insert(product)
             }
             return Result.Success(products)
