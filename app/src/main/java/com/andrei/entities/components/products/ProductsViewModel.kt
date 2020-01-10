@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.andrei.entities.components.data.Product
 import com.andrei.entities.components.data.ProductRepository
 import com.andrei.entities.components.data.local.AbstractProductDatabase
+import com.andrei.entities.components.data.remote.ProductApi
 import com.andrei.entities.core.Result
 import com.andrei.entities.core.TAG
 import kotlinx.coroutines.launch

@@ -23,6 +23,40 @@ interface ProductDao {
     @Query("DELETE FROM products")
     suspend fun deleteAll()
 
+    @Query(value = "SELECT * FROM products WHERE saved = 0 ORDER BY id")
+    suspend fun getAllUnsavedProducts(): List<Product>
+
+    @Query(value = "SELECT * FROM productIndex LIMIT 1")
+    suspend fun getCurrentIndex(): ProductIndex
+
+    @Query("UPDATE productIndex SET current_index = :index")
+    suspend fun updateProductIndex(index: Int)
+
+    @Query("DELETE FROM productIndex")
+    suspend fun deleteCurrentIndex()
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addCurrentIndex(productIndex: ProductIndex)
+
+    @Transaction
+    suspend fun insertUnsavedProduct (product:Product){
+
+        val productIndex = getCurrentIndex()
+        product.id = productIndex.index
+        product.saved = false
+        insert(product)
+        productIndex.index++
+        updateProductIndex(productIndex.index)
+    }
+
+    @Transaction
+    suspend fun insertSavedProduct (product: Product){
+
+        product.saved = true
+        insert(product)
+        updateProductIndex(product.id + 1)
+    }
+
     @Query("SELECT * FROM TOKEN LIMIT 1")
     fun getTokenHolder(): TokenHolder
 

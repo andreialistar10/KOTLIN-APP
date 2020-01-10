@@ -3,64 +3,37 @@ package com.andrei.entities.components.data
 import androidx.lifecycle.LiveData
 import com.andrei.entities.auth.data.TokenHolder
 import com.andrei.entities.components.data.local.ProductDao
-import com.andrei.entities.core.Result
+import com.andrei.entities.components.data.local.ProductIndex
 import com.andrei.entities.components.data.remote.ProductApi
+import com.andrei.entities.core.Result
 
 class ProductRepository(private val productDao: ProductDao) {
 
     val products = productDao.getAll()
 
-    suspend fun refresh(): Result<List<Product>>{
-        try{
-            productDao.deleteAll()
+    suspend fun refresh(): Result<List<Product>> {
+
+        return try {
+            refreshDatabase()
             val products = ProductApi.service.findAll()
-            for (product in products){
-                product.saved = true
-                productDao.insert(product)
+            for (product in products) {
+                productDao.insertSavedProduct(product)
             }
-            return Result.Success(products)
-        } catch (e: java.lang.Exception){
-            return Result.Error(e)
+            Result.Success(products)
+        } catch (e: java.lang.Exception) {
+            Result.Error(e)
         }
     }
 
-//    suspend fun loadAll(): Result<List<Product>> {
-//
-//        if (cachedProducts != null) {
-//            return Result.Success(cachedProducts as List<Product>)
-//        }
-//        return try {
-//            val products = ProductApi.service.findAll()
-//            cachedProducts = mutableListOf()
-//            cachedProducts?.addAll(products)
-//            Result.Success(cachedProducts as List<Product>) //this will be returned
-//        } catch (e: Exception) {
-//            Result.Error(e) //this will be returned
-//        }
-//    }
-
-    fun getById(productId: Int): LiveData<Product>{
+    fun getById(productId: Int): LiveData<Product> {
         return productDao.getById(productId)
     }
-
-//    suspend fun loadOne(productId: Int): Result<Product> {
-//
-//        val product = cachedProducts?.find { it.id == productId }
-//        if (product != null) {
-//            return Result.Success(product)
-//        }
-//        return try {
-//            Result.Success(ProductApi.service.findOne(productId))
-//        } catch (e: Exception) {
-//            Result.Error(e)
-//        }
-//    }
 
     suspend fun save(product: Product): Result<Product> {
 
         return try {
             val savedProduct = ProductApi.service.add(product)
-            productDao.insert(savedProduct)
+            productDao.insertSavedProduct(savedProduct)
             Result.Success(savedProduct)
         } catch (e: Exception) {
             Result.Error(e)
@@ -69,14 +42,14 @@ class ProductRepository(private val productDao: ProductDao) {
 
     suspend fun saveLocalStorage(product: Product): Result<Product> {
 
-        return try{
-            if (product.id != 0)
-                productDao.insert(product)
-            else{
-                //TODO local storage for offline support
+        return try {
+            if (product.id != 0) {
+                productDao.insertSavedProduct(product)
+            } else {
+                productDao.insertUnsavedProduct(product)
             }
             Result.Success(product)
-        }catch (e:java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             Result.Error(e)
         }
     }
@@ -92,7 +65,7 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
-    suspend fun updateLocalStorage(product:Product):Result<Product> {
+    suspend fun updateLocalStorage(product: Product): Result<Product> {
 
         return try {
             productDao.update(product)
@@ -102,10 +75,9 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
+    suspend fun addToken(tokenHolder: TokenHolder): Result<TokenHolder> {
 
-    suspend fun addToken(tokenHolder: TokenHolder): Result<TokenHolder>{
-
-        return try{
+        return try {
             productDao.saveToken(tokenHolder)
             return Result.Success(tokenHolder)
         } catch (e: Exception) {
@@ -113,9 +85,9 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
-    fun getTokenHolder(): Result<TokenHolder>{
+    fun getTokenHolder(): Result<TokenHolder> {
 
-        return try{
+        return try {
             val liveDataToken = productDao.getTokenHolder()
             Result.Success(liveDataToken)
         } catch (e: Exception) {
@@ -123,23 +95,63 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
-    suspend fun deleteToken(): Result<Nothing?>{
+    private suspend fun refreshDatabase() {
 
-        return try{
+        initCurrentIndex()
+        sendUnsavedProductsToBackendServer()
+        productDao.deleteAll()
+    }
+
+    private suspend fun initCurrentIndex() {
+
+        productDao.deleteCurrentIndex()
+        val currentIndex = ProductIndex(1)
+        productDao.addCurrentIndex(currentIndex)
+    }
+
+    private suspend fun sendUnsavedProductsToBackendServer() {
+
+        val unsavedProducts = productDao.getAllUnsavedProducts()
+        unsavedProducts.forEach { product ->
+            product.id = 0
+            ProductApi.service.add(product)
+        }
+    }
+
+    private suspend fun deleteToken(): Result<Nothing?> {
+
+        return try {
             productDao.deleteToken()
             Result.Success(null)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.Error(e)
         }
     }
 
-    suspend fun deleteAll(): Result<Nothing?> {
+    private suspend fun deleteAll(): Result<Nothing?> {
 
-        return try{
+        return try {
             productDao.deleteAll()
             Result.Success(null)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.Error(e)
         }
+    }
+
+    private suspend fun deleteCurrentIndex(): Result<Nothing?>{
+
+        return try {
+            productDao.deleteCurrentIndex()
+            Result.Success(null)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    suspend fun clearDatabase(){
+
+        deleteAll()
+        deleteToken()
+        deleteCurrentIndex()
     }
 }

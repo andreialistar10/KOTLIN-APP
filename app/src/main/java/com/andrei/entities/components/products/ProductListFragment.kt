@@ -52,8 +52,7 @@ class ProductListFragment : Fragment() {
         logout.setOnClickListener {
             Log.v(TAG, "logout")
             productsViewModel.viewModelScope.launch {
-                productsViewModel.productRepository.deleteToken()
-                productsViewModel.productRepository.deleteAll()
+                productsViewModel.productRepository.clearDatabase()
                 AuthRepository.logout()
                 WebSocketApi.disconnect()
             }
