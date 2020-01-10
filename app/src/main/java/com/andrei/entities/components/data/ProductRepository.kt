@@ -1,6 +1,7 @@
 package com.andrei.entities.components.data
 
 import androidx.lifecycle.LiveData
+import com.andrei.entities.auth.data.TokenHolder
 import com.andrei.entities.components.data.local.ProductDao
 import com.andrei.entities.core.Result
 import com.andrei.entities.components.data.remote.ProductApi
@@ -96,6 +97,47 @@ class ProductRepository(private val productDao: ProductDao) {
             productDao.update(product)
             return Result.Success(product)
         } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+
+    suspend fun addToken(tokenHolder: TokenHolder): Result<TokenHolder>{
+
+        return try{
+            productDao.saveToken(tokenHolder)
+            return Result.Success(tokenHolder)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    fun getTokenHolder(): Result<TokenHolder>{
+
+        return try{
+            val liveDataToken = productDao.getTokenHolder()
+            Result.Success(liveDataToken)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    suspend fun deleteToken(): Result<Nothing?>{
+
+        return try{
+            productDao.deleteToken()
+            Result.Success(null)
+        }catch (e: Exception){
+            Result.Error(e)
+        }
+    }
+
+    suspend fun deleteAll(): Result<Nothing?> {
+
+        return try{
+            productDao.deleteAll()
+            Result.Success(null)
+        }catch (e: Exception){
             Result.Error(e)
         }
     }

@@ -5,12 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.andrei.entities.auth.data.TokenHolder
 import com.andrei.entities.components.data.Product
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Product::class], version = 1)
+@Database(entities = [Product::class, TokenHolder::class], version = 3)
 abstract class AbstractProductDatabase : RoomDatabase() {
 
     abstract fun productDao(): ProductDao
@@ -32,6 +33,7 @@ abstract class AbstractProductDatabase : RoomDatabase() {
                 "abstract_db"
             )
                 .addCallback(WordDatabaseCallback(scope))
+                .allowMainThreadQueries()
                 .build()
             INSTANCE = instance
             return instance
@@ -52,7 +54,8 @@ abstract class AbstractProductDatabase : RoomDatabase() {
 
         suspend fun populateDatabase(productDao: ProductDao) {
 
-            productDao.deleteAll()
+//            productDao.deleteAll()
+//            productDao.deleteToken()
         }
     }
 

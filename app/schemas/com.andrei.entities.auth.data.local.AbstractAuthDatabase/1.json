@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "294bc426d3cf0e1bc9634c356f5046a3",
+    "entities": [
+      {
+        "tableName": "TOKEN",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`jwt` TEXT NOT NULL, `role` TEXT NOT NULL, PRIMARY KEY(`jwt`))",
+        "fields": [
+          {
+            "fieldPath": "jwt",
+            "columnName": "jwt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "jwt"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '294bc426d3cf0e1bc9634c356f5046a3')"
+    ]
+  }
+}

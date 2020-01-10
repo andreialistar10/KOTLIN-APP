@@ -1,20 +1,22 @@
 package com.andrei.entities.core
 
+import com.andrei.entities.auth.data.TokenHolder
 import okhttp3.Interceptor
 import okhttp3.Response
 
 class TokenInterceptor constructor() : Interceptor{
 
-    var token: String? = null
+    var tokenHolder: TokenHolder? = null
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val original = chain.request()
         val originalUrl = original.url
-        if (token == null)
+        if (tokenHolder == null)
             return chain.proceed(original)
+        val token = tokenHolder
         val requestBuilder = original.newBuilder()
-            .addHeader("Authorization","Bearer $token")
+            .addHeader("Authorization","Bearer ${token?.jwt}")
             .url(originalUrl)
         val request = requestBuilder.build()
         return chain.proceed(request)
