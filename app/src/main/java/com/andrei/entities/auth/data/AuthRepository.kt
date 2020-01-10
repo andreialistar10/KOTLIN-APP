@@ -10,7 +10,6 @@ object AuthRepository {
         private set
 
     val isLoggedIn: Boolean
-        //        get() = user != null
         get() = Api.tokenInterceptor.tokenHolder != null
 
     init {
@@ -18,7 +17,6 @@ object AuthRepository {
     }
 
     fun logout() {
-        user = null
         Api.tokenInterceptor.tokenHolder = null
     }
 

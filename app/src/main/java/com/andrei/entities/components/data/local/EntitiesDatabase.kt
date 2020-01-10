@@ -32,30 +32,10 @@ abstract class AbstractProductDatabase : RoomDatabase() {
                 AbstractProductDatabase::class.java,
                 "abstract_db"
             )
-                .addCallback(WordDatabaseCallback(scope))
                 .allowMainThreadQueries()
                 .build()
             INSTANCE = instance
             return instance
-        }
-
-        private class WordDatabaseCallback(private val scope: CoroutineScope) :
-            RoomDatabase.Callback() {
-
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                super.onOpen(db)
-                INSTANCE?.let { database ->
-                    scope.launch(Dispatchers.IO) {
-                        populateDatabase(database.productDao())
-                    }
-                }
-            }
-        }
-
-        suspend fun populateDatabase(productDao: ProductDao) {
-
-//            productDao.deleteAll()
-//            productDao.deleteToken()
         }
     }
 

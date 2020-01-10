@@ -23,8 +23,6 @@ interface ProductDao {
     @Query("DELETE FROM products")
     suspend fun deleteAll()
 
-//    @Query("SELECT * FROM TOKEN LIMIT 1")
-//    fun getTokenHolder(): LiveData<TokenHolder>
     @Query("SELECT * FROM TOKEN LIMIT 1")
     fun getTokenHolder(): TokenHolder
 

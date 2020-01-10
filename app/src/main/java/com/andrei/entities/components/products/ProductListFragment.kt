@@ -79,6 +79,13 @@ class ProductListFragment : Fragment() {
         }
         productsList.adapter = productListAdapter
 
+        subscribeToViewModel()
+        productsViewModel.refresh()
+        WebSocketApi.connectToWebSocket(myMessageWorker)
+    }
+
+    private fun subscribeToViewModel() {
+
         productsViewModel.products.observe(this, Observer { value ->
             Log.v(TAG, "update products")
             productListAdapter.products = value
@@ -98,8 +105,6 @@ class ProductListFragment : Fragment() {
                     Toast.makeText(activity?.parent, message, Toast.LENGTH_SHORT).show()
             }
         })
-        productsViewModel.refresh()
-        WebSocketApi.connectToWebSocket(myMessageWorker)
     }
 
     private fun setupToken() {
@@ -108,7 +113,6 @@ class ProductListFragment : Fragment() {
             null -> getTokenFromLocalStorage()
             else -> addToken()
         }
-
     }
 
     private fun getTokenFromLocalStorage() {
