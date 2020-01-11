@@ -46,7 +46,9 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
             Log.v(TAG, "refresh...")
             mutableLoading.value = true
             mutableException.value = null
-            if (connectivityReceiver.connectedToWifi(getApplication()))
+
+            val connected = connectivityReceiver.connectedToWifi.value
+            if (connected != null && connected)
                 useOnlineSupport()
             else {
                 useOfflineSupport()

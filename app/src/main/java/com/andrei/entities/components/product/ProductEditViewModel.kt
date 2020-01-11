@@ -71,7 +71,8 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
     private suspend fun doSave(product: Product): Result<Product> {
 
         val connectivityReceiver = ConnectivityReceiver.getInstance(getApplication())
-        if (connectivityReceiver.connectedToWifi(getApplication()))
+        val connected = connectivityReceiver.connectedToWifi.value
+        if (connected != null && connected)
             return productRepository.save(product)
         return productRepository.saveLocalStorage(product)
     }
@@ -79,7 +80,8 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
     private suspend fun doUpdateProduct(product: Product): Result<Product> {
 
         val connectivityReceiver = ConnectivityReceiver.getInstance(getApplication())
-        if (connectivityReceiver.connectedToWifi(getApplication()))
+        val connected = connectivityReceiver.connectedToWifi.value
+        if (connected != null && connected)
             return productRepository.update(product)
         return productRepository.updateLocalStorage(product)
     }

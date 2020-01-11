@@ -13,8 +13,7 @@ class ConnectivityReceiver private constructor(context: Context) {
     val connectedToWifi: LiveData<Boolean> = mutableConnectedToWifi
 
     init {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.registerDefaultNetworkCallback(object :
             ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
@@ -29,9 +28,9 @@ class ConnectivityReceiver private constructor(context: Context) {
                     if (mutableConnectedToWifi.value != false)
                         mutableConnectedToWifi.postValue(false)
                 } else {
-                    val connected = isConnectedToWifi(network,connectivityManager)
+                    val connected = isConnectedToWifi(network, connectivityManager)
                     if (connected != mutableConnectedToWifi.value)
-                    mutableConnectedToWifi.postValue(connected)
+                        mutableConnectedToWifi.postValue(connected)
                 }
             }
 
@@ -48,18 +47,18 @@ class ConnectivityReceiver private constructor(context: Context) {
         })
     }
 
-    fun connectedToWifi(context: Context): Boolean {
-
-        val connMgr = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = connMgr.activeNetwork
-
-        if (activeNetwork != null) {
-            val networkCapabilities = connMgr.getNetworkCapabilities(activeNetwork)
-            if (networkCapabilities != null)
-                return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-        }
-        return false
-    }
+//    fun connectedToWifi(context: Context): Boolean {
+//
+//        val connMgr = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val activeNetwork = connMgr.activeNetwork
+//
+//        if (activeNetwork != null) {
+//            val networkCapabilities = connMgr.getNetworkCapabilities(activeNetwork)
+//            if (networkCapabilities != null)
+//                return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+//        }
+//        return false
+//    }
 
     companion object {
 
