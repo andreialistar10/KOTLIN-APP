@@ -28,8 +28,10 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
     val productRepository: ProductRepository
 
     init {
-        val productDao = AbstractProductDatabase.getDatabase(application,viewModelScope).productDao()
-        productRepository = ProductRepository(productDao)
+        val abstractProductDatabase = AbstractProductDatabase.getDatabase(application, viewModelScope)
+        val productDao =abstractProductDatabase.productDao()
+        val authDao = abstractProductDatabase.authDao()
+        productRepository = ProductRepository(productDao, authDao)
     }
 
     fun getProductById(productId: Int): LiveData<Product>{

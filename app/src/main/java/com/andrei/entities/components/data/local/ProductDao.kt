@@ -56,16 +56,4 @@ interface ProductDao {
         insert(product)
         updateProductIndex(product.id + 1)
     }
-
-    @Query("SELECT * FROM TOKEN LIMIT 1")
-    fun getTokenHolder(): TokenHolder
-
-    @Query("DELETE FROM TOKEN")
-    suspend fun deleteToken()
-
-    @Query("UPDATE TOKEN SET jwt = :jwt")
-    suspend fun updateToken(jwt: String)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun saveToken(tokenHolder: TokenHolder)
 }

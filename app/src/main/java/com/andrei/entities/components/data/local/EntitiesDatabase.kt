@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.andrei.entities.auth.data.TokenHolder
+import com.andrei.entities.auth.data.local.AuthDao
 import com.andrei.entities.components.data.Product
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 abstract class AbstractProductDatabase : RoomDatabase() {
 
     abstract fun productDao(): ProductDao
+    abstract fun authDao(): AuthDao
 
     companion object {
 

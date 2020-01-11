@@ -39,9 +39,10 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
     val productRepository: ProductRepository
 
     init {
-        val productDao =
-            AbstractProductDatabase.getDatabase(application, viewModelScope).productDao()
-        productRepository = ProductRepository(productDao)
+        val abstractProductDatabase = AbstractProductDatabase.getDatabase(application, viewModelScope)
+        val productDao =abstractProductDatabase.productDao()
+        val authDao = abstractProductDatabase.authDao()
+        productRepository = ProductRepository(productDao, authDao)
         ConnectivityReceiver.connectivityReceiverListener = networkChangeReceiverListener
     }
 
