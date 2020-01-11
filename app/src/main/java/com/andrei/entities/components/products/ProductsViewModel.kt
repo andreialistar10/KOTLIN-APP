@@ -1,21 +1,14 @@
 package com.andrei.entities.components.products
 
 import android.app.Application
-import android.content.Context
-import android.content.IntentFilter
-import android.net.ConnectivityManager
-import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.andrei.entities.components.data.Product
 import com.andrei.entities.components.data.ProductRepository
 import com.andrei.entities.components.data.local.AbstractProductDatabase
-import com.andrei.entities.components.data.remote.ProductApi
 import com.andrei.entities.core.Result
 import com.andrei.entities.core.TAG
 import com.andrei.entities.core.connectivity.ConnectivityReceiver
@@ -30,7 +23,7 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
     private val mutableProducts = MutableLiveData<List<Product>>().apply { value = emptyList() }
     private val mutableLoading = MutableLiveData<Boolean>().apply { value = false }
     private val mutableException = MutableLiveData<Exception>().apply { value = null }
-    private val networkChangeReceiverListener= NetworkChangeReceiverListener()
+    private val connectivityReceiver: ConnectivityReceiver
 
     val products: LiveData<List<Product>> = mutableProducts
     val loading: LiveData<Boolean> = mutableLoading
@@ -39,11 +32,12 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
     val productRepository: ProductRepository
 
     init {
-        val abstractProductDatabase = AbstractProductDatabase.getDatabase(application, viewModelScope)
-        val productDao =abstractProductDatabase.productDao()
+        val abstractProductDatabase =
+            AbstractProductDatabase.getDatabase(application, viewModelScope)
+        val productDao = abstractProductDatabase.productDao()
         val authDao = abstractProductDatabase.authDao()
         productRepository = ProductRepository(productDao, authDao)
-        ConnectivityReceiver.connectivityReceiverListener = networkChangeReceiverListener
+        connectivityReceiver = ConnectivityReceiver.getInstance(application)
     }
 
     fun refresh() {
@@ -54,7 +48,7 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
             mutableException.value = null
             if (ConnectivityReceiver.connectedToWifi(getApplication()))
                 useOnlineSupport()
-            else{
+            else {
                 useOfflineSupport()
             }
             mutableLoading.value = false
@@ -89,29 +83,6 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
                 mutableException.value = result.exception
             }
         }
-    }
-
-    private class NetworkChangeReceiverListener: AppCompatActivity() ,ConnectivityReceiver.ConnectivityReceiverListener{
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            registerReceiver(ConnectivityReceiver(),
-//                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-            )
-        }
-
-        override fun onNetworkConnectionChanged(isConnected: Boolean) {
-
-            Log.v(TAG, "connected to wifi: $isConnected")
-        }
-
-        override fun onResume() {
-            super.onResume()
-
-            ConnectivityReceiver.connectivityReceiverListener = this
-        }
-
     }
 
     private inner class MyMessageWorker : MessageWorker {
