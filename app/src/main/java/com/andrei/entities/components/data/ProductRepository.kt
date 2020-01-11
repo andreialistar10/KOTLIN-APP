@@ -9,7 +9,15 @@ import com.andrei.entities.core.Result
 
 class ProductRepository(private val productDao: ProductDao) {
 
-    val products = productDao.getAll()
+    suspend fun getAll(): Result<List<Product>> {
+
+        return try {
+            val offlineProducts = productDao.getAll()
+            Result.Success(offlineProducts)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
 
     suspend fun refresh(): Result<List<Product>> {
 
@@ -95,6 +103,13 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
+    suspend fun clearDatabase(){
+
+        deleteAll()
+        deleteToken()
+        deleteCurrentIndex()
+    }
+
     private suspend fun refreshDatabase() {
 
         initCurrentIndex()
@@ -146,12 +161,5 @@ class ProductRepository(private val productDao: ProductDao) {
         } catch (e: Exception) {
             Result.Error(e)
         }
-    }
-
-    suspend fun clearDatabase(){
-
-        deleteAll()
-        deleteToken()
-        deleteCurrentIndex()
     }
 }

@@ -9,7 +9,7 @@ import com.andrei.entities.components.data.Product
 interface ProductDao {
 
     @Query("SELECT * FROM products ORDER BY NAME ASC")
-    fun getAll(): LiveData<List<Product>>
+    suspend fun getAll(): List<Product>
 
     @Query("SELECT * FROM products WHERE id=:id")
     fun getById(id: Int): LiveData<Product>
