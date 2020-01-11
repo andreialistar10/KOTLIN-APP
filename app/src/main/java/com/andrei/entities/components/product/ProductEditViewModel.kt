@@ -2,17 +2,21 @@ package com.andrei.entities.components.product
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
-import com.andrei.entities.core.Result
-import com.andrei.entities.core.TAG
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.andrei.entities.components.data.Product
 import com.andrei.entities.components.data.ProductRepository
 import com.andrei.entities.components.data.local.AbstractProductDatabase
+import com.andrei.entities.core.Result
+import com.andrei.entities.core.TAG
+import com.andrei.entities.core.connectivity.ConnectivityReceiver
 import kotlinx.coroutines.launch
 
 class ProductEditViewModel(application: Application) : AndroidViewModel(application) {
 
-//    private val mutableProduct = MutableLiveData<Product>().apply {
+    //    private val mutableProduct = MutableLiveData<Product>().apply {
 //        value =
 //            Product("", 0)
 //    }
@@ -20,7 +24,7 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
     private val mutableCompleted = MutableLiveData<Boolean>().apply { value = false }
     private val mutableException = MutableLiveData<Exception>().apply { value = null }
 
-//    val product: LiveData<Product> = mutableProduct
+    //    val product: LiveData<Product> = mutableProduct
     val fetching: LiveData<Boolean> = mutableFetching
     val completed: LiveData<Boolean> = mutableCompleted
     val exception: LiveData<Exception> = mutableException
@@ -28,13 +32,14 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
     val productRepository: ProductRepository
 
     init {
-        val abstractProductDatabase = AbstractProductDatabase.getDatabase(application, viewModelScope)
-        val productDao =abstractProductDatabase.productDao()
+        val abstractProductDatabase =
+            AbstractProductDatabase.getDatabase(application, viewModelScope)
+        val productDao = abstractProductDatabase.productDao()
         val authDao = abstractProductDatabase.authDao()
         productRepository = ProductRepository(productDao, authDao)
     }
 
-    fun getProductById(productId: Int): LiveData<Product>{
+    fun getProductById(productId: Int): LiveData<Product> {
         Log.v(TAG, "getProductById...")
         return productRepository.getById(productId)
     }
@@ -44,13 +49,12 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
             Log.v(TAG, "saveOrUpdateProduct..");
             mutableFetching.value = true
             mutableException.value = null
-            val result: Result<Product>
-            if (product.id != 0) {
-                result = productRepository.update(product)
+            val result: Result<Product> = if (product.id != 0) {
+                doUpdateProduct(product)
             } else {
-                result = productRepository.save(product)
+                doSave(product)
             }
-            when(result) {
+            when (result) {
                 is Result.Success -> {
                     Log.d(TAG, "saveOrUpdateProduct succeeded");
                 }
@@ -62,6 +66,22 @@ class ProductEditViewModel(application: Application) : AndroidViewModel(applicat
             mutableCompleted.value = true
             mutableFetching.value = false
         }
+    }
+
+    private suspend fun doSave(product: Product): Result<Product> {
+
+        val connectivityReceiver = ConnectivityReceiver.getInstance(getApplication())
+        if (connectivityReceiver.connectedToWifi(getApplication()))
+            return productRepository.save(product)
+        return productRepository.saveLocalStorage(product)
+    }
+
+    private suspend fun doUpdateProduct(product: Product): Result<Product> {
+
+        val connectivityReceiver = ConnectivityReceiver.getInstance(getApplication())
+        if (connectivityReceiver.connectedToWifi(getApplication()))
+            return productRepository.update(product)
+        return productRepository.updateLocalStorage(product)
     }
 
 //    fun loadProduct(productId: Int) {

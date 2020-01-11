@@ -23,11 +23,9 @@ class ProductRepository(private val productDao: ProductDao, private val authDao:
     suspend fun refresh(): Result<List<Product>> {
 
         return try {
-            refreshDatabase()
+            sendUnsavedProductsToBackendServer()
             val products = ProductApi.service.findAll()
-            for (product in products) {
-                productDao.insertSavedProduct(product)
-            }
+            refreshDatabase(products)
             Result.Success(products)
         } catch (e: java.lang.Exception) {
             Result.Error(e)
@@ -111,11 +109,9 @@ class ProductRepository(private val productDao: ProductDao, private val authDao:
         deleteCurrentIndex()
     }
 
-    private suspend fun refreshDatabase() {
+    private suspend fun refreshDatabase(products: List<Product>) {
 
-        initCurrentIndex()
-        sendUnsavedProductsToBackendServer()
-        productDao.deleteAll()
+        productDao.initTables(products)
     }
 
     private suspend fun initCurrentIndex() {

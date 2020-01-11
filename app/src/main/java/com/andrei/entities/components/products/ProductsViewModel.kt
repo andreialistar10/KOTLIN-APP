@@ -23,7 +23,7 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
     private val mutableProducts = MutableLiveData<List<Product>>().apply { value = emptyList() }
     private val mutableLoading = MutableLiveData<Boolean>().apply { value = false }
     private val mutableException = MutableLiveData<Exception>().apply { value = null }
-    private val connectivityReceiver: ConnectivityReceiver
+    val connectivityReceiver: ConnectivityReceiver
 
     val products: LiveData<List<Product>> = mutableProducts
     val loading: LiveData<Boolean> = mutableLoading
@@ -43,10 +43,10 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
     fun refresh() {
 
         viewModelScope.launch {
-            Log.v(TAG, "refresh...");
+            Log.v(TAG, "refresh...")
             mutableLoading.value = true
             mutableException.value = null
-            if (ConnectivityReceiver.connectedToWifi(getApplication()))
+            if (connectivityReceiver.connectedToWifi(getApplication()))
                 useOnlineSupport()
             else {
                 useOfflineSupport()
@@ -73,13 +73,13 @@ class ProductsViewModel(application: Application) : AndroidViewModel(application
 
         when (val result = productRepository.refresh()) {
             is Result.Success -> {
-                Log.d(TAG, "refresh succeeded")
+                Log.d(TAG, "online support succeeded")
                 mutableProducts.value = result.data
                 val myMessageWorker = MyMessageWorker()
                 WebSocketApi.connectToWebSocket(myMessageWorker)
             }
             is Result.Error -> {
-                Log.w(TAG, "refresh failed", result.exception)
+                Log.w(TAG, "online support failed", result.exception)
                 mutableException.value = result.exception
             }
         }

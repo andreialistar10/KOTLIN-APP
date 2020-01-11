@@ -24,7 +24,7 @@ class ProductListFragment : Fragment() {
 
     private lateinit var productListAdapter: ProductListAdapter
     private lateinit var productsViewModel: ProductsViewModel
-
+    private lateinit var observer: Observer<Boolean>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,6 +59,7 @@ class ProductListFragment : Fragment() {
 
         Log.v(TAG, "onDestroyView")
         WebSocketApi.disconnect()
+        productsViewModel.connectivityReceiver.connectedToWifi.removeObserver(observer)
         super.onDestroyView()
     }
 
@@ -74,7 +75,7 @@ class ProductListFragment : Fragment() {
         productsList.adapter = productListAdapter
 
         subscribeToViewModel()
-        productsViewModel.refresh()
+//        productsViewModel.refresh()
     }
 
     private fun subscribeToViewModel() {
@@ -98,6 +99,15 @@ class ProductListFragment : Fragment() {
                     Toast.makeText(activity?.parent, message, Toast.LENGTH_SHORT).show()
             }
         })
+
+        observer = Observer { value ->
+            Log.v(TAG, ":::::::::::::::::::::::::Connected to wifi: $value::::::::::::::::::::::::::")
+            if (value == false)
+                WebSocketApi.disconnect()
+            productsViewModel.refresh()
+        }
+
+        productsViewModel.connectivityReceiver.connectedToWifi.observe(this, observer)
     }
 
     private fun setupToken() {

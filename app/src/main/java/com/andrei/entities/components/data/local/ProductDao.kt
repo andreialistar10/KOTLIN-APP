@@ -2,7 +2,6 @@ package com.andrei.entities.components.data.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.andrei.entities.auth.data.TokenHolder
 import com.andrei.entities.components.data.Product
 
 @Dao
@@ -37,6 +36,18 @@ interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addCurrentIndex(productIndex: ProductIndex)
+
+    @Transaction
+    suspend fun initTables(products: List<Product>) {
+
+        deleteCurrentIndex()
+        val currentIndex = ProductIndex(1)
+        addCurrentIndex(currentIndex)
+        deleteAll()
+        for (product in products) {
+            insertSavedProduct(product)
+        }
+    }
 
     @Transaction
     suspend fun insertUnsavedProduct (product:Product){
