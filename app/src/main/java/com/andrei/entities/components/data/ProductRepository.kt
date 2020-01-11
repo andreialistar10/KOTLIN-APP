@@ -114,13 +114,6 @@ class ProductRepository(private val productDao: ProductDao, private val authDao:
         productDao.initTables(products)
     }
 
-    private suspend fun initCurrentIndex() {
-
-        productDao.deleteCurrentIndex()
-        val currentIndex = ProductIndex(1)
-        productDao.addCurrentIndex(currentIndex)
-    }
-
     private suspend fun sendUnsavedProductsToBackendServer() {
 
         val unsavedProducts = productDao.getAllUnsavedProducts()

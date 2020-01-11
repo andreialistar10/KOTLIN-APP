@@ -59,7 +59,8 @@ class ProductListFragment : Fragment() {
 
         Log.v(TAG, "onDestroyView")
         WebSocketApi.disconnect()
-        productsViewModel.connectivityReceiver.connectedToWifi.removeObserver(observer)
+        if (::observer.isInitialized)
+            productsViewModel.connectivityReceiver.connectedToWifi.removeObserver(observer)
         super.onDestroyView()
     }
 
@@ -75,7 +76,6 @@ class ProductListFragment : Fragment() {
         productsList.adapter = productListAdapter
 
         subscribeToViewModel()
-//        productsViewModel.refresh()
     }
 
     private fun subscribeToViewModel() {
