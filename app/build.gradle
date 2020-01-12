@@ -67,4 +67,9 @@ dependencies {
     // https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid
     implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
     implementation 'com.android.support:design:26.1.0'
+    // Google maps
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
+    // Google Maps Android API Utility Library
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
 }

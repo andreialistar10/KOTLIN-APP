@@ -23,4 +23,10 @@
         android:label="@string/product_edit"
         tools:layout="@layout/product_edit_fragment" />
 
+    <fragment
+        android:id="@+id/map_fragment"
+        android:name="com.andrei.entities.components.map.MapFragment"
+        android:label="@string/map"
+        tools:layout="@layout/map_fragment" />
+
 </navigation>

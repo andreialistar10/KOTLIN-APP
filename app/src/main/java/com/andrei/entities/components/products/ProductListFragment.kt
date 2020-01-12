@@ -53,6 +53,11 @@ class ProductListFragment : Fragment() {
             }
             findNavController().navigate(R.id.login_fragment)
         }
+
+        location.setOnClickListener {
+            Log.v(TAG,"See my location...")
+            findNavController().navigate(R.id.map_fragment)
+        }
     }
 
     override fun onDestroyView() {
